@@ -1,0 +1,109 @@
+@import url('https://fonts.googleapis.com/css2?family=Blinker&display=swap');
+
+:root {
+    --color-neutral-dark: #15161a;
+    --color-neutral-medium: #1e1f23;
+    --color-neutral-light: #686868;
+
+    --color-primary-medium: #00a8e8;
+    --border: 1px solid var(--color-neutral-light);
+    --box-shadow: 0px 16px 48px rgba(0, 0, 0, 0.080);
+}
+
+body {
+    background-color: var(--color-neutral-dark);
+    font-family: 'Blinker', sans-serif;
+    color: white;
+}
+
+main {
+    display: flex;
+}
+
+.container-preview {
+    width: 50vw;
+    max-width: 50dvw;
+}
+
+/* ===== Scrollbar CSS ===== */
+  /* Firefox */
+  * {
+    scrollbar-width: auto;
+    scrollbar-color: #686868 #15161a;
+  }
+
+  /* Chrome, Edge, and Safari */
+  *::-webkit-scrollbar {
+    width: 16px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: #15161a;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: #686868;
+    border-radius: 10px;
+    border: 3px solid #15161a;
+  }
+
+#preview{
+    overflow-y: auto;
+    height: calc(100vh - 3.55rem);
+}
+
+.container-header {
+    background-color: var(--color-neutral-medium);
+    border-bottom: var(--border);
+    padding: 1rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.group-button-editor {
+    display: flex;
+    margin-right: 1rem;
+    border: var(--border);
+    border-radius: 3px;
+    height: fit-content;
+}
+
+.group-button-editor button {
+    background: none;
+    outline: none;
+    border: 0;
+    color: white;
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    transition: 0.2s;
+}
+
+.group-button-editor button:hover {
+    background-color: var(--color-neutral-light);
+}
+
+.group-button-editor button:active {
+    background-color: var(--color-neutral-dark);
+}
+
+.group-button-editor button span {
+    font-size: 17px;
+}
+
+#container {
+    height: calc(100vh - 3.55rem);
+}
+
+.button-primary {
+    border: 0;
+    outline: none;
+    background-color: var(--color-primary-medium);
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: var(--box-shadow);
+}
+
