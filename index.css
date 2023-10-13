@@ -50,6 +50,7 @@ main {
 #preview{
     overflow-y: auto;
     height: calc(100vh - 3.55rem);
+    padding: 0 2rem;
 }
 
 .container-header {
