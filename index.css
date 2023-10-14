@@ -108,9 +108,9 @@ main {
 }
 
 .button-primary {
-    border: 0;
+    border: var(--border);
     outline: none;
-    background-color: var(--color-primary-medium);
+    background: var(--color-neutral-medium);
     color: white;
     padding: 0.6rem 1.2rem;
     border-radius: 5px;
@@ -119,7 +119,20 @@ main {
     font-size: 15px;
 }
 
-#fileName {
+.button-primary button:hover {
+    background-color: var(--color-neutral-light);
+}
+
+.button-primary button:active {
+    background-color: var(--color-neutral-dark);
+}
+
+#body{
+    overflow: auto;
+}
+
+#fileName,
+#fileNameMobile {
     background: none;
     border-top: 0;
     border-left: 0;
@@ -128,6 +141,7 @@ main {
     outline: none;
     color: var(--font-color);
     font-size: 17px;
+    margin-right: 20px;
 }
 
 .loading {
@@ -270,4 +284,43 @@ textarea {
     resize: none;
     color: var(--font-color);
     font-size: 15px;
+}
+
+.btn-mobile {
+    display: none;
+}
+
+@media only screen and (max-width: 700px) {
+    #preview {
+        display: none;
+    }
+
+    .container-preview {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .container-header {
+        flex-wrap: wrap;
+        height: fit-content;
+    }
+
+    .group-button-editor {
+        margin-bottom: 1rem;
+    }
+
+    main {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .btn-mobile {
+        display: flex;
+        margin-bottom: 1rem;
+        width: 100%;
+    }
+
+    .btn-mobile input {
+        width: 100%;
+    }
 }

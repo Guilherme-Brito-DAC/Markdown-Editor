@@ -40,7 +40,13 @@ function renderPreview() {
         document.getElementById("body").innerHTML = ""
 
         const markdown = editor.getValue()
-        const converter = new showdown.Converter()
+        const converter = new showdown.Converter({
+            simplifiedAutoLink: true,
+            tasklists: true,
+            tables: true,
+            strikethrough: true,
+            ghMentionsLink: true,
+        })
 
         const html = converter.makeHtml(markdown)
 
@@ -58,7 +64,7 @@ function loading(active) {
         document.getElementsByClassName("loading")[0].style.display = "none"
 }
 
-function exportFile() {
+function exportFile(fileName) {
     try {
         const markdown = editor.getValue()
 
@@ -67,7 +73,7 @@ function exportFile() {
         const file = new Blob([markdown], { type: 'text/markdown' })
 
         link.href = URL.createObjectURL(file)
-        link.download = document.getElementById("fileName").value + ".md"
+        link.download = fileName + ".md"
         link.click()
         URL.revokeObjectURL(link.href)
     } catch (error) {
@@ -76,24 +82,15 @@ function exportFile() {
 }
 
 function insertEffectOnText(value, jsonInfo) {
-    let currentMarkdown = editor.getValue()
-
-    const lines = currentMarkdown.split('\n')
-
-    const startIndex = lines[jsonInfo.startLineNumber - 1].substring(0, jsonInfo.startColumn - 1).length
-    const endIndex = lines[jsonInfo.endLineNumber - 1].substring(0, jsonInfo.endColumn - 1).length
-
-    lines[jsonInfo.startLineNumber - 1] = lines[jsonInfo.startLineNumber - 1].substring(0, startIndex) + value + lines[jsonInfo.endLineNumber - 1].substring(endIndex)
-
-    currentMarkdown = lines.join('\n')
-
-    editor.setValue(currentMarkdown)
+    editor.executeEdits("", [
+        { range: new monaco.Range(jsonInfo.startLineNumber, jsonInfo.startColumn, jsonInfo.endLineNumber, jsonInfo.endColumn), text: value }
+    ])
 }
 
 function format(html) {
-    var tab = '\t';
-    var result = '';
-    var indent = '';
+    var tab = '\t'
+    var result = ''
+    var indent = ''
 
     html.split(/>\s*</).forEach(function (element) {
         if (element.match(/^\/\w/)) {
@@ -105,13 +102,87 @@ function format(html) {
         if (element.match(/^<?\w[^>]*[^\/]$/) && !element.startsWith("input")) {
             indent += tab;
         }
-    });
+    })
 
-    return result.substring(1, result.length - 3);
+    return result.substring(1, result.length - 3)
+}
+
+function getValueAlign(direction, selection) {
+    const regex = /<div[\s\S]*?>([\s\S]*?)<\/div>/
+    const match = selection.match(regex)
+
+    let value = ""
+
+    if (!match)
+        value = `<div style="text-align: ${direction}">${selection}</div>`
+    else
+        value = match[1].trim()
+
+    return value
+}
+
+function loadToolTips() {
+    tippy('#addBold', {
+        content: "Bold",
+    })
+
+    tippy('#addItalic', {
+        content: "Italic",
+    })
+
+    tippy('#addUnderlined', {
+        content: "Underlined",
+    })
+
+    tippy('#addStrikeThrough', {
+        content: "Strike Though",
+    })
+
+    tippy('#addAlignLeft', {
+        content: "Align Left",
+    })
+
+    tippy('#addAlignCenter', {
+        content: "Align Center",
+    })
+
+    tippy('#addAlignRight', {
+        content: "Align Right",
+    })
+
+    tippy('#addListBulleted', {
+        content: "Bulleted List",
+    })
+
+    tippy('#addListNumbered', {
+        content: "Numbered List",
+    })
+
+    tippy('#addCheckList', {
+        content: "Checklist",
+    })
+
+    tippy('#addQuote', {
+        content: "Quote",
+    })
+
+    tippy('#addCode', {
+        content: "Code",
+    })
 }
 
 document.getElementById('addBold').addEventListener('click', function () {
-    const value = "**" + editor.getModel().getValueInRange(editor.getSelection()) + "**"
+    let selection = editor.getModel().getValueInRange(editor.getSelection())
+
+    let value = ""
+    let isBoldAndItalic = selection.startsWith("***")
+
+    if (!selection.startsWith("**"))
+        value = "**" + selection + "**"
+    else if (isBoldAndItalic)
+        value = selection.slice(2, -2)
+    else
+        value = selection.replaceAll("**", "")
 
     const jsonInfo = editor.getSelection()
 
@@ -119,7 +190,39 @@ document.getElementById('addBold').addEventListener('click', function () {
 })
 
 document.getElementById('addItalic').addEventListener('click', function () {
-    const value = "*" + editor.getModel().getValueInRange(editor.getSelection()) + "*"
+    let selection = editor.getModel().getValueInRange(editor.getSelection())
+
+    let value = ""
+
+    let isBoldAndItalic = selection.startsWith("***")
+    let isBold = selection.startsWith("**")
+
+    if (isBoldAndItalic)
+        value = selection.slice(1, -1)
+    else if (isBold)
+        value = "*" + selection + "*"
+    else if (!selection.startsWith("*"))
+        value = "*" + selection + "*"
+    else
+        value = selection.replaceAll("*", "")
+
+    const jsonInfo = editor.getSelection()
+
+    insertEffectOnText(value, jsonInfo)
+})
+
+document.getElementById('addUnderlined').addEventListener('click', function () {
+    let selection = editor.getModel().getValueInRange(editor.getSelection())
+
+    const regex = /<u[\s\S]*?>([\s\S]*?)<\/u>/
+    const match = selection.match(regex)
+
+    let value = ""
+
+    if (!match)
+        value = `<u>${selection}</u>`
+    else
+        value = match[1].trim()
 
     const jsonInfo = editor.getSelection()
 
@@ -127,7 +230,14 @@ document.getElementById('addItalic').addEventListener('click', function () {
 })
 
 document.getElementById('addStrikeThrough').addEventListener('click', function () {
-    const value = "~~" + editor.getModel().getValueInRange(editor.getSelection()) + "~~"
+    let selection = editor.getModel().getValueInRange(editor.getSelection())
+
+    let value = ""
+
+    if (!selection.startsWith("~~"))
+        value = "~~" + selection + "~~"
+    else
+        value = selection.replaceAll("~~", "")
 
     const jsonInfo = editor.getSelection()
 
@@ -135,39 +245,111 @@ document.getElementById('addStrikeThrough').addEventListener('click', function (
 })
 
 document.getElementById('addAlignLeft').addEventListener('click', function () {
+    let selection = editor.getModel().getValueInRange(editor.getSelection())
 
-})
-
-document.getElementById('addAlignCenter').addEventListener('click', function () {
-
-})
-
-document.getElementById('addAlignRight').addEventListener('click', function () {
-
-})
-
-document.getElementById('addListBulleted').addEventListener('click', function () {
-
-})
-
-document.getElementById('addListNumbered').addEventListener('click', function () {
-
-})
-
-document.getElementById('addLink').addEventListener('click', function () {
-
-})
-
-document.getElementById('addCode').addEventListener('click', function () {
-    let value = "ˋ" + editor.getModel().getValueInRange(editor.getSelection()) + "ˋ"
+    let value = getValueAlign("left", selection)
 
     const jsonInfo = editor.getSelection()
 
     insertEffectOnText(value, jsonInfo)
 })
 
-document.getElementById('addImage').addEventListener('click', function () {
+document.getElementById('addAlignCenter').addEventListener('click', function () {
+    let selection = editor.getModel().getValueInRange(editor.getSelection())
 
+    let value = getValueAlign("center", selection)
+
+    const jsonInfo = editor.getSelection()
+
+    insertEffectOnText(value, jsonInfo)
+})
+
+document.getElementById('addAlignRight').addEventListener('click', function () {
+    let selection = editor.getModel().getValueInRange(editor.getSelection())
+
+    let value = getValueAlign("right", selection)
+
+    const jsonInfo = editor.getSelection()
+
+    insertEffectOnText(value, jsonInfo)
+})
+
+document.getElementById('addListBulleted').addEventListener('click', function () {
+    let selection = editor.getModel().getValueInRange(editor.getSelection())
+
+    let value = ""
+
+    if (!selection.startsWith("- "))
+        value = "- " + selection
+    else
+        value = selection.replaceAll("- ", "")
+
+    const jsonInfo = editor.getSelection()
+
+    insertEffectOnText(value, jsonInfo)
+})
+
+document.getElementById('addListNumbered').addEventListener('click', function () {
+    let selection = editor.getModel().getValueInRange(editor.getSelection())
+
+    let value = ""
+
+    if (!selection.startsWith("1. "))
+        value = "1. " + selection
+    else
+        value = selection.replaceAll("1. ", "")
+
+    const jsonInfo = editor.getSelection()
+
+    insertEffectOnText(value, jsonInfo)
+})
+
+document.getElementById('addCheckList').addEventListener('click', function () {
+    let selection = editor.getModel().getValueInRange(editor.getSelection())
+
+    let value = ""
+
+    if (!selection.startsWith("- [ ] "))
+        value = "- [ ] " + selection
+    else
+        value = selection.replaceAll("- [ ] ", "")
+
+    const jsonInfo = editor.getSelection()
+
+    insertEffectOnText(value, jsonInfo)
+})
+
+document.getElementById('addQuote').addEventListener('click', function () {
+    let selection = editor.getModel().getValueInRange(editor.getSelection())
+
+    let value = ""
+
+    if (!selection.startsWith("> "))
+        value = "> " + selection
+    else
+        value = selection.replaceAll("> ", "")
+
+    const jsonInfo = editor.getSelection()
+
+    insertEffectOnText(value, jsonInfo)
+})
+
+document.getElementById('addCode').addEventListener('click', function () {
+    let selection = editor.getModel().getValueInRange(editor.getSelection())
+
+    const regex = /<code[\s\S]*?>([\s\S]*?)<\/code>/
+    const match = selection.match(regex)
+
+    let value = ""
+
+    if (!match)
+        value = `<code>${selection}</code>`
+    else
+        value = match[1].trim()
+
+    const jsonInfo = editor.getSelection()
+
+    insertEffectOnText(value, jsonInfo)
 })
 
 document.getElementById('toggleShowCode').addEventListener('click', function () {
@@ -182,13 +364,16 @@ document.getElementById('toggleShowCode').addEventListener('click', function () 
 })
 
 document.getElementById('saveAsFile').addEventListener('click', function () {
-    exportFile()
+    exportFile(document.getElementById("fileName").value)
+})
+
+document.getElementById('saveAsFileMobile').addEventListener('click', function () {
+    exportFile(document.getElementById("fileNameMobile").value)
 })
 
 initializeMonaco()
 
-loading(false)
-
-// setTimeout(() => {
-//     loading(false)
-// }, 1500)
+setTimeout(() => {
+    loading(false)
+    loadToolTips()
+}, 500)
