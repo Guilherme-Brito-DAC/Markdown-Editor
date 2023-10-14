@@ -371,6 +371,20 @@ document.getElementById('saveAsFileMobile').addEventListener('click', function (
     exportFile(document.getElementById("fileNameMobile").value)
 })
 
+document.getElementById('btnCode').addEventListener('click', function () {
+    document.getElementById('btnPreview').classList.remove("navigation-active")
+    document.getElementById('btnCode').classList.add("navigation-active")
+    document.getElementById('container').style.display = "block"
+    document.getElementById('preview').style.display = "none"
+})
+
+document.getElementById('btnPreview').addEventListener('click', function () {
+    document.getElementById('btnPreview').classList.add("navigation-active")
+    document.getElementById('btnCode').classList.remove("navigation-active")
+    document.getElementById('preview').style.display = "block"
+    document.getElementById('container').style.display = "none"
+})
+
 initializeMonaco()
 
 setTimeout(() => {
