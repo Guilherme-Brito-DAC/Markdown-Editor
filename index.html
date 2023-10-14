@@ -13,39 +13,56 @@
 </head>
 
 <body>
+    <div class="loading">
+        <div class="lds-spinner">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+
     <main>
         <div class="container-preview">
             <div class="container-header">
                 <div class="group-button-editor">
-                    <button type="button">
+                    <button type="button" id="addBold">
                         <span class="material-symbols-outlined">
                             format_bold
                         </span>
                     </button>
-                    <button type="button">
+                    <button type="button" id="addItalic">
                         <span class="material-symbols-outlined">
                             format_italic
                         </span>
                     </button>
-                    <button type="button">
+                    <button type="button" id="addStrikeThrough">
                         <span class="material-symbols-outlined">
-                            format_underlined
+                            strikethrough_s
                         </span>
                     </button>
                 </div>
 
                 <div class="group-button-editor">
-                    <button type="button">
+                    <button type="button" id="addAlignLeft">
                         <span class="material-symbols-outlined">
                             format_align_left
                         </span>
                     </button>
-                    <button type="button">
+                    <button type="button" id="addAlignCenter">
                         <span class="material-symbols-outlined">
                             format_align_center
                         </span>
                     </button>
-                    <button type="button">
+                    <button type="button" id="addAlignRight">
                         <span class="material-symbols-outlined">
                             format_align_right
                         </span>
@@ -53,14 +70,32 @@
                 </div>
 
                 <div class="group-button-editor">
-                    <button type="button">
+                    <button type="button" id="addListBulleted">
                         <span class="material-symbols-outlined">
                             format_list_bulleted
                         </span>
                     </button>
-                    <button type="button">
+                    <button type="button" id="addListNumbered">
                         <span class="material-symbols-outlined">
                             format_list_numbered
+                        </span>
+                    </button>
+                </div>
+
+                <div class="group-button-editor">
+                    <button type="button" id="addLink">
+                        <span class="material-symbols-outlined">
+                            link
+                        </span>
+                    </button>
+                    <button type="button" id="addCode">
+                        <span class="material-symbols-outlined">
+                            code
+                        </span>
+                    </button>
+                    <button type="button" id="addImage">
+                        <span class="material-symbols-outlined">
+                            image
                         </span>
                     </button>
                 </div>
@@ -71,13 +106,31 @@
         </div>
         <div class="container-preview">
             <div class="container-header" style="justify-content: space-between;">
-                PREVIEW
-                <button type="button" class="button-primary">
-                    Save As File
-                </button>
+                <div>
+
+                </div>
+                <div>
+                    <input type="text" id="fileName" value="File Name" />
+                    <button type="button" class="button-primary" id="saveAsFile">
+                        Save As File
+                    </button>
+                </div>
             </div>
             <div id="preview">
 
+                <div class="showCode">
+                    <button type="button" id="toggleShowCode">
+                        <span class="material-symbols-outlined">
+                            code
+                        </span>
+                    </button>
+                </div>
+
+                <div id="body">
+
+                </div>
+
+                <textarea name="" id="body-html" style="display: none;" readonly></textarea>
             </div>
         </div>
     </main>
